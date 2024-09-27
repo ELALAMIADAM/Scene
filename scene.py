@@ -23,7 +23,7 @@ def glut_event(scene):
   glutDisplayFunc(scene.display)
   glutReshapeFunc(scene.reshape)
   glutKeyboardFunc(scene.on_normal_key_action)
-  glutSpecialFunc(scene.on_special_key_action);
+  glutSpecialFunc(scene.on_special_key_action)
 ##  glutIdleFunc(scene.animation)
 
 class Scene :
@@ -32,8 +32,9 @@ class Scene :
     self.spin=0.0
     self.angle=0.0
     self.axes=[0,1,0]
-    self.model=Model(size)
-    # self.model=Car(size)
+    #self.model=Model(size)
+    self.model=Car(size)
+    self.crane=Crane(size)
     self.c_rho,self.c_phi,self.c_theta=10,0,0
     self.c_position=[self.c_rho*sin(radians(self.c_phi)),0,self.c_rho*cos(radians(self.c_phi))]
     self.c_direction=[0,0,0]
@@ -42,6 +43,7 @@ class Scene :
 
 
   def display(self) :
+    global wcs_on
     gl_init()
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
@@ -54,9 +56,9 @@ class Scene :
     # Model : scene objects modeling + transformations
     glRotatef(self.spin,0,1,0)
     floor(10*self.size)
-
-    wcs(4*self.size)  # WCS en 3D
-
+    
+    #wcs(2*self.size)  # WCS en 3D
+    
     # Positioning object to catch
     glPushMatrix()
     glTranslatef(-3,0.5,3)

@@ -197,7 +197,7 @@ def display() :
   # glColor3f(1.0,0.0,1.0)
   # glTranslatef(0.0,0.5,0.0)  # positioning object on floor
   # glutWireTeapot(size/5.0)
-  #wcs(size)
+  wcs(size)
   # glLineWidth(3)
   # glBegin(GL_LINES)
   # glColor3f(1.0,1.0,1.0)
@@ -271,7 +271,7 @@ def on_normal_key_action(key,x,y) :
     tr_x=tr_x-0.1
   elif key== b'y' :
     print("rotation (CCW) du modele autour de l'axe 0y")
-    angle_z=angle_z+1
+    angle_z=angle_zmode+1
   elif key== b'y' :
     print("rotation (CW) du modele autour de l'axe 0y")
     angle_z=angle_z-1
@@ -310,5 +310,5 @@ if __name__ == "__main__" :
 
   glut_event()
   model=Car(size/5)
-  crane=Crane(size/5)
+  crane=Crane(size)
   glutMainLoop()
