@@ -1,0 +1,142 @@
+En début de  seance
+===================
+1) Copier le repertoire du sujet de labos :
+  - /home/TP/modules/sujets/REV/Scene
+chez vous en le renommant Dupond_Dupont_Scene (si vos noms sont Dupond, Dupont):
+--> cp -r /home/TP/modules/sujets/REV/Scene/ $HOME/chemin_acces_repertoire_REV_OpenGL/Dupond_Dupont_Scene
+
+1) Copier le repertoire du sujet : /home/TP/modules/sujets/REV/Scene/
+sous votre compte utilisateur: $HOME/chemin_acces_repertoire_ENIB_REV/Scene
+
+--> cp -r  /home/TP/modules/sujets/REV/Scene/ $HOME/chemin_acces_repertoire_ENIB_REV/Scene
+
+2) se placer sous votre repertoire de travail  : 
+--> cd $HOME/chemin_acces_repertoire_ENIB_REV/Scene
+
+Objectifs
+=========
+Modéliser une grue et la déplacer dans le plan Oxz de manière à pouvoir aller pointer une objet dans l'environnement.
+
+Initia(lisa)tion
+================
+Tester sous l'interpreteur python les primitives,modèles et scène
+  - python primitives.py 
+  - python models.py 
+  - python scene.py 
+
+Implémentation 
+==============
+
+Création de primitives 3D :
+  - axe() : un axe 3D  (primitives.py)
+  - wcs() :un repère 3D  constitué de 3 axes (primitives.py)
+Création  de modèles 3D :
+  - class Car : modèle de voiture (models.py)
+  - class Crane : modèle de bras articulé (models.py)
+Création de scène :
+ - class Scene : création de grue (Car+Crane) et contrôle des mouvements par interaction clavier.
+
+On fournira une "aide en ligne" (touche h du clavier) dans lequel apparaitra sur le terminal :
+    - les NOM-Prénom des concepteurs de l'application
+    - les touches d'interaction commentées
+
+Première version
+----------------
+Création de repère 3D redimensionnable (primitives.py) :
+   - axe(size) : création d'un axe (disque+cylindre+cone)
+   - wcs(size) : repère 3D (3 axes) 
+     On représentera chaque axe avec le code de couleur conventionnel (R,G,B) pour (Ox,Oy,Oz).
+     Autrement dit :
+       a) axe Ox en Rouge
+       b) axe Oy en Vert
+       c) axe Oz en Bleu
+vérifier le redimensionnement de chaque modèle  par une touche d'interaction
+
+Intégration du repère dans la scène  (scene.py) 
+   - display() : intégrer le repère de scène
+Interaction  : rendre visible/invisible ce repère dans la scène par une interaction clavier :
+   - un appui sur la touche (par exemple touche 'w') pour le rendre visible
+   - un nouvel appui sur la touche (par exemple touche 'w') pour le rendre invisible
+
+Deuxième  version
+-----------------
+Création du véhicule (models.py): 
+   - class Car :
+       - wheel() : créer une roue (un tore avec un nombre de boulons cylindriques
+       - draw() : créer la carrosserie avec les 4 roues
+vérifier le redimensionnement de chaque modèle  par une touche d'interaction
+
+Intégration du véhicule dans la scène  (scene.py) :
+  - display() : intégrer le repère de scène
+
+Contrôler les déplacements dans le plan Oxz
+   - translations :faire avancer/reculer le véhicule 
+   - rotations : 
+      - les roues et boulons tournent en même temps que le véhicule avance
+      - faire pivoter les roues avant lorsqu'on change d'orientation
+      - repositionner les roues avant dans la direcion où le véhicule se dirige
+
+Troisème version
+----------------
+Création du bras articulé (models.py): 
+   - class Crane :
+       - draw() : créer le bras articulé (base+joint+bras+joint+avant-bras+cône)
+
+Intégration du  bras articulé dans la scène  (scene.py) : 
+  - display() : positionner le bras sur le véhicule  
+Contrôler les mouvements (bras,avant-bras) du bras articulé 
+
+Test final : 
+  - contrôler la grue pour aller pointer un objet dans la scène
+  - vérifier le redimensionnement de toute la scène par une touche d'interaction
+
+
+
+
+
+class Crane(Model):
+    def __init__(self, size=1.0, orientation=[0.0, 0.0, 0.0], position=[0.0, 0.0, 0.0]):
+        Model.__init__(self, size, orientation, position)
+        self.arm_angle = 45.0  # arm angle rotation
+        self.forearm_angle = 30.0  # forearm angle rotation
+
+    # Getter and setter methods
+    def set_arm_angle(self, angle):
+        self.arm_angle = angle
+
+    def get_arm_angle(self):
+        return self.arm_angle
+
+    def set_forearm_angle(self, angle):
+        self.forearm_angle = angle
+
+    def get_forearm_angle(self):
+        return self.forearm_angle
+
+    def create(self):
+        glPushMatrix()
+
+        # Cockpit: a red cube
+        glTranslatef(0, 0, -self.size / 2)
+        glRotatef(self.arm_angle, 1, 0, 0)
+        wcs(self.size)  # Assuming this function sets up the coordinate system
+        glColor3f(1.0, 0.0, 0.0)
+        cube_colored(0.2 * self.size)  # Creating a red cube for the cockpit
+
+        # Forearm: a green cylinder
+        glTranslatef(0, 0, -self.size / 4)
+        glRotatef(self.forearm_angle, 1, 0, 0)
+        glColor3f(0.0, 1.0, 0.0)
+        cylinder(0.1 * self.size, 0.1 * self.size, 0.5 * self.size, slices=10, stacks=5)  # Green cylinder for the forearm
+
+        # Joint: a red sphere
+        glColor3f(1.0, 0.0, 0.0)
+        glTranslatef(0, 0, -0.25 * self.size)
+        glutWireSphere(0.1 * self.size, 10, 10)  # Red sphere for the joint
+
+        # Arm: a green cylinder
+        glTranslatef(0, 0, -0.25 * self.size)
+        glColor3f(0.0, 1.0, 0.0)
+        cylinder(0.1 * self.size, 0.1 * self.size, 0.5 * self.size, slices=10, stacks=5)  # Green cylinder for the arm
+
+        glPopMatrix()
